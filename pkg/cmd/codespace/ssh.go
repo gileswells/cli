@@ -158,7 +158,7 @@ func newCpCmd(app *App) *cobra.Command {
 	cpCmd := &cobra.Command{
 		Use:   "cp [-e] [-r] srcs... dest",
 		Short: "Copy files between local and remote file systems",
-		Long: `
+		Long: strings.Join([`
 The cp command copies files between the local and remote file systems.
 
 As with the UNIX cp command, the first argument specifies the source and the last
@@ -175,14 +175,16 @@ By default, remote file names are interpreted literally. With the -e flag,
 each such argument is treated in the manner of scp, as a Bash expression to
 be evaluated on the remote machine, subject to expansion of tildes, braces,
 globs, environment variables, and backticks, as in these examples:
-
- $ gh codespace cp -e README.md 'remote:/workspace/$RepositoryName/'
- $ gh codespace cp -e 'remote:~/*.go' ./gofiles/
- $ gh codespace cp -e 'remote:/workspace/myproj/go.{mod,sum}' ./gofiles/
-
+`,
+heredoc.Doc(`
+	$ gh codespace cp -e README.md 'remote:/workspace/$RepositoryName/'
+	$ gh codespace cp -e 'remote:~/*.go' ./gofiles/
+	$ gh codespace cp -e 'remote:/workspace/myproj/go.{mod,sum}' ./gofiles/
+`),
+`
 For security, do not use the -e flag with arguments provided by untrusted
 users; see https://lwn.net/Articles/835962/ for discussion.
-`,
+`]),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return app.Copy(cmd.Context(), args, opts)
 		},
